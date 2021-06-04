@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Persona generator</title>
+    <meta name="robots" content="noindex,nofollow"/>
+    <style>
+        body { font-family: sans-serif; }
+        ul { padding: 0; }
+        li { margin: .25em; list-style: none; }
+        h2 { margin-bottom: .1em; }
+        h3 { margin: .1em 0; }
+        .infos,
+        .address,
+        .country { display: block; }
+    </style>
+</head>
+<body>
+    <h1>Persona list (using <a href="https://chancejs.com/">chancejs</a>)</h1>
+    <ul></ul>
+    <template id="persona">
+        <li>
+            <h2 class="name"></h2>
+            <h3 class="profession"></h3>
+            <div class="infos">
+                <span class="birthday"></span> - 
+                <span class="phone"></span> -
+                <span class="email"></span>
+            </div>
+            <div>
+                <span class="address"></span>
+                <span class="zip"></span>
+                <span class="city"></span>
+                <span class="country"></span>
+            </div>
+        </li>
+    </template>
+    <script src="./chance.min.js"></script>
+    <script src="./index.js"></script>
+</body>
+</html>
