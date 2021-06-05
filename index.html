@@ -11,8 +11,7 @@
         h2 { margin-bottom: .1em; }
         h3 { margin: .1em 0; }
         .infos,
-        .address,
-        .country { display: block; }
+        .address { display: block; }
     </style>
 </head>
 <body>
@@ -21,17 +20,23 @@
     <template id="persona">
         <li>
             <h2 class="name"></h2>
-            <h3 class="profession"></h3>
+            <h3>
+                <span class="profession"></span> - 
+                <span class="company"></span>
+            </h3>
             <div class="infos">
+                <span class="ssn"></span> -
                 <span class="birthday"></span> - 
                 <span class="phone"></span> -
-                <span class="email"></span>
+            </div>
+            <div class="infos">
+                <span class="email-pro"></span>
+                <span class="email-perso"></span>
             </div>
             <div>
                 <span class="address"></span>
                 <span class="zip"></span>
                 <span class="city"></span>
-                <span class="country"></span>
             </div>
         </li>
     </template>
@@ -40,23 +45,58 @@
     const persona = document.querySelector('#persona').content
     const list = document.querySelector('ul')
 
-    const keys = [
-        { cl: 'name', fn: () => chance.name({ nationality: 'fr' })},
-        { cl: 'birthday', fn: () => chance.birthday({string: true, american: false}) },
-        { cl: 'profession', fn: () => `${chance.profession({ language: 'fr' })} chez ${chance.company({ language: 'fr' })}` },
-        { cl: 'email', fn: () => `<${chance.email()}>` },
-        { cl: 'phone', fn: () => `Tel: ${chance.phone({ country: 'fr' })}` },
-        { cl: 'address', fn: () => chance.address() },
-        { cl: 'city', fn: () => chance.city() },
-        { cl: 'zip', fn: () => chance.zip() },
-        { cl: 'country', fn: () => chance.country({ full: true }) },
-    ]
+    const pad = n => String(n).padStart(2, '0');
+    const removeAccent = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+    const slugify = str => str.toLowerCase().replace(/ /g, chance.character({ pool: '-_.' }))
+    const clean = str => slugify(removeAccent(str))
+    const tld = () => {
+        const tlds = [ 'fr', 'com', 'io', 'net' ]
+        return tlds[chance.integer({ min: 0, max: tlds.length - 1 })]
+    }
+    const publicDomain = () => {
+        const domains = [ 'free.fr', 'orange.fr', 'alice.net', 'sfr.fr' ]
+        return domains[chance.integer({ min: 0, max: domains.length - 1 })]
+    }
+
+    const fields = {
+        'name': () => chance.name({ nationality: 'fr' }),
+        'birthday': () => {
+            const [day, month, year] = chance.birthday({string: true, american: false}).split('/')
+            return `${pad(day)}/${pad(month)}/${year}`
+        },
+        'profession': () => chance.profession({ language: 'fr' }),
+        'company': () => chance.company({ language: 'fr' }),
+        'email-pro': ({name, company}) => `<${clean(name)}@${clean(company)}.${tld()}>`,
+        'email-perso': ({name, company}) => `<${clean(name)}@${publicDomain()}>`,
+        'phone': () => `Tel: ${chance.phone({ country: 'fr' })}`,
+        'address': () => chance.address(),
+        'city': () => chance.city(),
+        'zip': () => chance.zip(),
+        'ssn': ({birthday, zip}) => {
+            const [day, month, year] = birthday.split('/')
+            const s = chance.bool() ? '1' : '2'
+            const rnd1 = chance.integer({ min: 100, max: 999 })
+            const rnd2 = chance.integer({ min: 100, max: 999 })
+            const ssn = `${s}${year.substring(2)}${month}${zip.substr(0, 2)}${rnd1}${rnd2}`
+            const key = parseInt(ssn, 10) % 97
+            return ssn + key
+        }
+    }
+
+    /* TODO 
+    - company mal capitalité
+    - address en france
+    */
 
     list.style.display = 'none'
     for(let i = 0; i < 10; i++) {
         const item = document.importNode(persona, true)
-        keys.forEach(({ cl, fn }) => {
-            item.querySelector(`.${cl}`).textContent = String(fn())
+        const values = Object.keys(fields).reduce(function (acc, key) {
+            acc[key] = fields[key](acc)
+            return acc
+        }, {})
+        Object.entries(values).forEach(([ key, value ]) => {
+            item.querySelector(`.${key}`).textContent = String(value)
         })
         list.appendChild(item)
     }
