@@ -64,12 +64,12 @@
             const [day, month, year] = chance.birthday({string: true, american: false}).split('/')
             return `${pad(day)}/${pad(month)}/${year}`
         },
-        'profession': () => chance.profession({ language: 'fr' }),
-        'company': () => chance.company({ language: 'fr' }),
+        'profession': () => chance.profession({ country: 'fr' }),
+        'company': () => chance.company({ country: 'fr' }),
         'email-pro': ({name, company}) => `<${clean(name)}@${clean(company)}.${tld()}>`,
         'email-perso': ({name, company}) => `<${clean(name)}@${publicDomain()}>`,
         'phone': () => `Tel: ${chance.phone({ country: 'fr' })}`,
-        'address': () => chance.address(),
+        'address': () => chance.address({ country: 'fr' }),
         'city': () => chance.city(),
         'zip': () => chance.zip(),
         'ssn': ({birthday, zip}) => {
