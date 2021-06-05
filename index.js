@@ -10,6 +10,7 @@ const keys = [
     { cl: 'address', fn: () => chance.address() },
     { cl: 'city', fn: () => chance.city() },
     { cl: 'zip', fn: () => chance.zip() },
+    { cl: 'country', fn: () => chance.country({ full: true }) },
 ]
 
 list.style.display = 'none'
