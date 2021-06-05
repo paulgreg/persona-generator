@@ -1659,7 +1659,7 @@
 
     Chance.prototype.address = function (options) {
         options = initOptions(options);
-        return this.natural({min: 1, max: 200}) + ' ' + this.street(options);
+        return this.natural({min: 1, max: options.maximum || 2000}) + ' ' + this.street(options);
     };
 
     Chance.prototype.altitude = function (options) {

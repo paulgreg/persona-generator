@@ -76,7 +76,7 @@
         'email-pro': ({name, company}) => `<${clean(name)}@${clean(company)}.${tld()}>`,
         'email-perso': ({name, company}) => `<${clean(name)}@${publicDomain()}>`,
         'phone': () => `Tel: ${chance.phone({ country: 'fr' })}`,
-        'address': () => chance.address({ country: 'fr' }),
+        'address': () => chance.address({ country: 'fr', maximum: 200 }),
         'city': () => chance.city(),
         'zip': () => chance.zip(),
         'ssn': ({birthday, zip}) => {
