@@ -5,18 +5,23 @@
     <title>Persona generator</title>
     <meta name="robots" content="noindex,nofollow"/>
     <style>
-        body { font-family: sans-serif; }
-        ul { padding: 0; }
-        li { margin: .25em; list-style: none; }
-        h2 { margin-bottom: .1em; }
-        h3 { margin: .1em 0; }
+        body    { font-family: sans-serif; margin: 1em 2em 2em 2em; }
+        ul      { padding: 0; }
+        li      { margin: .25em; list-style: none; }
+        h1      { width: 100%; border-bottom: 1px solid gray; }
+        h2      { margin-bottom: .1em; }
+        h3      { margin: .1em 0; color: #222222 }
+        p       { margin: 1em 0; }
         .infos,
         .address { display: block; }
     </style>
 </head>
 <body>
-    <h1>Liste de persona (via <a href="https://github.com/paulgreg/chancejs/">chancejs</a>)</h1>
+    <h1>Personnes fictives</h1>
     <ul></ul>
+    <p>
+        Basé sur <a href="https://github.com/paulgreg/chancejs/">chancejs</a>, code source sur <a href="https://github.com/paulgreg/persona-generator">github</a>.
+    </p>
     <template id="persona">
         <li>
             <h2 class="name"></h2>
@@ -49,12 +54,14 @@
     const removeAccent = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
     const slugify = str => str.toLowerCase().replace(/ /g, chance.character({ pool: '-_.' }))
     const clean = str => slugify(removeAccent(str))
+    const capitalize = str => str.replace(/^\w/g, c => c.toUpperCase())
+
     const tld = () => {
-        const tlds = [ 'fr', 'com', 'io', 'net' ]
+        const tlds = [ 'fr', 'com', 'io', 'net', 'it' ]
         return tlds[chance.integer({ min: 0, max: tlds.length - 1 })]
     }
     const publicDomain = () => {
-        const domains = [ 'free.fr', 'orange.fr', 'alice.net', 'sfr.fr' ]
+        const domains = [ 'free.fr', 'orange.fr', 'alice.net', 'sfr.fr', 'wanadoo.fr', 'aol.com', 'gmail.com', 'fastmail.com', 'me.com' ]
         return domains[chance.integer({ min: 0, max: domains.length - 1 })]
     }
 
@@ -64,7 +71,7 @@
             const [day, month, year] = chance.birthday({string: true, american: false}).split('/')
             return `${pad(day)}/${pad(month)}/${year}`
         },
-        'profession': () => chance.profession({ country: 'fr' }),
+        'profession': () => capitalize(chance.profession({ country: 'fr' })),
         'company': () => chance.company({ country: 'fr' }),
         'email-pro': ({name, company}) => `<${clean(name)}@${clean(company)}.${tld()}>`,
         'email-perso': ({name, company}) => `<${clean(name)}@${publicDomain()}>`,
