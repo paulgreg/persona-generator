@@ -71,14 +71,15 @@
             const [day, month, year] = chance.birthday({string: true, american: false}).split('/')
             return `${pad(day)}/${pad(month)}/${year}`
         },
+        'zipAndCity': () => chance.zipAndCity(),
         'profession': () => capitalize(chance.profession({ country: 'fr' })),
         'company': () => chance.company({ country: 'fr' }),
         'email-pro': ({name, company}) => `<${clean(name)}@${clean(company)}.${tld()}>`,
         'email-perso': ({name, company}) => `<${clean(name)}@${publicDomain()}>`,
         'phone': () => `Tel: ${chance.phone({ country: 'fr' })}`,
         'address': () => chance.address({ country: 'fr', maximum: 200 }),
-        'city': () => chance.city(),
-        'zip': () => chance.zip(),
+        'city': ({city}) => city,
+        'zip': ({zip}) => zip,
         'ssn': ({birthday, zip}) => {
             const [day, month, year] = birthday.split('/')
             const s = chance.bool() ? '1' : '2'
@@ -99,7 +100,12 @@
     for(let i = 0; i < 10; i++) {
         const item = document.importNode(persona, true)
         const values = Object.keys(fields).reduce(function (acc, key) {
-            acc[key] = fields[key](acc)
+            const randomValue = fields[key](acc)
+            if (randomValue instanceof Object) {
+                acc = {...acc, ...randomValue}
+            } else {
+                acc[key] = randomValue
+            }
             return acc
         }, {})
         Object.entries(values).forEach(([ key, value ]) => {
